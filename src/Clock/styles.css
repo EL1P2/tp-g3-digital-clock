@@ -1,13 +1,28 @@
 .clock-container {
-    display: flex;
-    align-items: center;
+    display: block;
     justify-content: center;
     height: 100vh;
     background-color: #000;
 }
-
 .clock {
     font-family: 'Orbitron', sans-serif;
     font-size: 10rem;
     color: #00f001;
+}
+
+.timer-container {
+    display: flex;
+    justify-content: center;
+}
+
+.timer-btn {
+    background: #E8FD04;
+    margin-top: 30px;
+    margin-left: 5px;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    text-transform: uppercase;
+    width: 150px;
+    cursor: pointer;
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const BtnComponent = (props) => {
+const BtnComponent = (props) => {
     let btn_component, class_name, exec_func;
     btn_component  = props.btn_component;
     class_name  = props.class_name;
@@ -11,3 +11,5 @@ export const BtnComponent = (props) => {
         </button>
     );
 };
+
+export default BtnComponent;
