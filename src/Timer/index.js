@@ -1,4 +1,5 @@
 import { useState} from 'react';
+import { useFormik } from "formik";
 import { Link } from "react-router-dom";
 // import BtnComponent from '../ButtonComponent/ButtonCmpt';
 import './styles.css';
@@ -49,14 +50,12 @@ const Timer = () => {
 
     return (
       <div className="main-section">
-        <div className ="timer-component">
-            <DisplayComponent time={time}/>
-        </div>
-       <div className="clock-holder">
-            <div className="timer">
-                 <BtnComponent status={status} resume={resume} reset={reset} stop={stop} start={start}/>
-            </div>
-       </div>
+          <DisplayComponent time={time}/>
+         <div className="clock-holder">
+              <div className="timer">
+                   <BtnComponent status={status} resume={resume} reset={reset} stop={stop} start={start}/>
+              </div>
+         </div>
       </div>
     );
 };
@@ -105,6 +104,18 @@ function BtnComponent(props) {
 }
 
 function DisplayComponent(props) {
+  return (
+    <div className="test">
+      <p className="timer-input-component">
+          <input className= "timer-input-change" type="text" name="name" pattern="[^a-zA-Z]+" required minlength="0" maxlength="2" />:
+          <input className= "timer-input-change" type="int" name="name" value={(props.time.m >= 10)? props.time.m : "0"+ props.time.m} id="name"/>:
+          <input className= "timer-input-change" type="int" name="name" value={(props.time.s >= 10)? props.time.s : "0"+ props.time.s} id="name"/>
+      </p>
+    </div>
+  );
+}
+
+function _DisplayComponent(props) {
   const h = () => {
      if(props.time.h === 0){
        return '';
@@ -113,12 +124,17 @@ function DisplayComponent(props) {
      }
   }
   return (
-    <div>
+    <div className="timer-component">
        {h()}&nbsp;:&nbsp;
        <span>{(props.time.m >= 10)? props.time.m : "0"+ props.time.m}</span>&nbsp;:&nbsp;
        <span>{(props.time.s >= 10)? props.time.s : "0"+ props.time.s}</span>
     </div>
   );
 }
+
+function handleChangeSecond(event){
+  console.log(event.target.value);
+}
+
 
 export default Timer;
