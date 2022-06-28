@@ -1,7 +1,6 @@
-import { useState} from 'react';
-import { useFormik } from "formik";
+import { useState, useEffect} from 'react';
+import { useFormik,useFormikContext } from "formik";
 import { Link } from "react-router-dom";
-// import BtnComponent from '../ButtonComponent/ButtonCmpt';
 import './styles.css';
 
 const Timer = () => {
@@ -13,24 +12,59 @@ const Timer = () => {
     // started = 1
     // stopped = 2
 
+    // HOOK useFormik
+    const formik = useFormik({
+        initialValues: {
+          seconds: time.s,
+          minutes: time.m,
+          hours: time.h,
+        },
+        onSubmit: (values) => {
+          console.log(values);
+        }
+    });
+
+    const initialization = () => {
+      formik.initialValues["seconds"]=parseInt(formik.values.seconds);
+      formik.initialValues["minutes"]=formik.values.minutes;
+      formik.initialValues["hours"]=formik.values.hours;
+    };
+
     const start = () => {
+      initialization();
       run();
       setStatus(1);
       setInterv(setInterval(run, 1000));
     };
 
-    var updatedS = time.s, updatedM = time.m, updatedH = time.h;
+    var updatedS = parseInt(formik.values.seconds), updatedM = formik.values.minutes, updatedH = formik.values.hours;
 
     const run = () => {
-      if(updatedM === 0){
+      if(updatedM === 0 && updatedH!==0){
         updatedH--;
         updatedM = 60;
       }
-      if(updatedS === 0){
+      if(updatedS === 0 && updatedM!==0){
         updatedM--;
         updatedS = 60;
       }
+
+      if(updatedM === 0 && updatedS === 0 && updatedH === 0){
+        stop();
+        clearInterval(interv);
+        alert("Time Up");
+        return true;
+      }
+
       updatedS--;
+
+      formik.initialValues["seconds"]=updatedS;
+      formik.initialValues["minutes"]=updatedM;
+      formik.initialValues["hours"]=updatedH;
+
+      console.log(formik.values.seconds,formik.values.minutes,formik.values.hours);
+      console.log(formik.values.seconds);
+
       return setTime({s:updatedS, m:updatedM, h:updatedH});
     };
 
@@ -42,15 +76,26 @@ const Timer = () => {
     const reset = () => {
       clearInterval(interv);
       setStatus(0);
+
+      formik.initialValues["seconds"]=date.getSeconds();
+      formik.initialValues["minutes"]=date.getMinutes();
+      formik.initialValues["hours"]=date.getHours();
       setTime({s:date.getSeconds(), m:date.getMinutes(), h:date.getHours()})
+
     };
 
     const resume = () => start();
 
-
     return (
       <div className="main-section">
-          <DisplayComponent time={time}/>
+          <div className="test">
+            <p className="timer-input-component">
+                <input onSubmit={formik.handleSubmit} onChange={formik.handleChange} className= "timer-input-change" type="text" name="hours" value= {(formik.values.hours >= 10)? formik.values.hours : "0"+ formik.values.hours} id="hours"/>:
+                <input onSubmit={formik.handleSubmit} onChange={formik.handleChange} className= "timer-input-change" type="text" name="minutes" value= {(formik.values.minutes >= 10)? formik.values.minutes : "0"+ formik.values.minutes} id="minutes"/>:
+                <input onSubmit={formik.handleSubmit} onChange={formik.handleChange} className= "timer-input-change" type="text" name="seconds" value= {(formik.values.seconds >= 10)? formik.values.seconds : "0"+ formik.values.seconds} id="seconds"/>
+            </p>
+          </div>
+          {/*<DisplayComponent time={time}/>*/}
          <div className="clock-holder">
               <div className="timer">
                    <BtnComponent status={status} resume={resume} reset={reset} stop={stop} start={start}/>
@@ -66,7 +111,7 @@ function BtnComponent(props) {
     <div>
       {(props.status === 0)? 
         <div>
-          <button className="timer-btn timer-btn-gre"
+          <button type = "submit" className="timer-btn timer-btn-gre"
                   onClick={props.start}>Start</button> 
           <Link to="/Clock">
                   <button className="timer-btn timer-btn-yel">Cancel</button>
@@ -102,39 +147,5 @@ function BtnComponent(props) {
     </div>
   );
 }
-
-function DisplayComponent(props) {
-  return (
-    <div className="test">
-      <p className="timer-input-component">
-          <input className= "timer-input-change" type="text" name="name" pattern="[^a-zA-Z]+" required minlength="0" maxlength="2" />:
-          <input className= "timer-input-change" type="int" name="name" value={(props.time.m >= 10)? props.time.m : "0"+ props.time.m} id="name"/>:
-          <input className= "timer-input-change" type="int" name="name" value={(props.time.s >= 10)? props.time.s : "0"+ props.time.s} id="name"/>
-      </p>
-    </div>
-  );
-}
-
-function _DisplayComponent(props) {
-  const h = () => {
-     if(props.time.h === 0){
-       return '';
-     }else {
-       return <span>{(props.time.h >= 10)? props.time.h : "0"+ props.time.h}</span>;
-     }
-  }
-  return (
-    <div className="timer-component">
-       {h()}&nbsp;:&nbsp;
-       <span>{(props.time.m >= 10)? props.time.m : "0"+ props.time.m}</span>&nbsp;:&nbsp;
-       <span>{(props.time.s >= 10)? props.time.s : "0"+ props.time.s}</span>
-    </div>
-  );
-}
-
-function handleChangeSecond(event){
-  console.log(event.target.value);
-}
-
 
 export default Timer;
