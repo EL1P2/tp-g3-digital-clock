@@ -1,5 +1,6 @@
 import { useState, useEffect} from 'react';
 import { useFormik,useFormikContext } from "formik";
+import * as Yup from "yup";
 import { Link } from "react-router-dom";
 import './styles.css';
 
@@ -19,6 +20,11 @@ const Timer = () => {
           minutes: time.m,
           hours: time.h,
         },
+        validationSchema: Yup.object({
+            seconds: Yup.string().max(59).required("required"),
+            minutes: Yup.string().max(59).required("required"),
+            minutes: Yup.string().max(59).required("required")
+        }),
         onSubmit: (values) => {
           console.log(values);
         }
@@ -26,8 +32,8 @@ const Timer = () => {
 
     const initialization = () => {
       formik.initialValues["seconds"]=parseInt(formik.values.seconds);
-      formik.initialValues["minutes"]=formik.values.minutes;
-      formik.initialValues["hours"]=formik.values.hours;
+      formik.initialValues["minutes"]=parseInt(formik.values.minutes);
+      formik.initialValues["hours"]=parseInt(formik.values.hours);
     };
 
     const start = () => {
@@ -37,12 +43,12 @@ const Timer = () => {
       setInterv(setInterval(run, 1000));
     };
 
-    var updatedS = parseInt(formik.values.seconds), updatedM = formik.values.minutes, updatedH = formik.values.hours;
+    var updatedS = time.s, updatedM = formik.values.minutes, updatedH = formik.values.hours;
 
     const run = () => {
       if(updatedM === 0 && updatedH!==0){
         updatedH--;
-        updatedM = 60;
+        updatedM = 59;
       }
       if(updatedS === 0 && updatedM!==0){
         updatedM--;
@@ -61,9 +67,6 @@ const Timer = () => {
       formik.initialValues["seconds"]=updatedS;
       formik.initialValues["minutes"]=updatedM;
       formik.initialValues["hours"]=updatedH;
-
-      console.log(formik.values.seconds,formik.values.minutes,formik.values.hours);
-      console.log(formik.values.seconds);
 
       return setTime({s:updatedS, m:updatedM, h:updatedH});
     };
@@ -90,12 +93,11 @@ const Timer = () => {
       <div className="main-section">
           <div className="test">
             <p className="timer-input-component">
-                <input onSubmit={formik.handleSubmit} onChange={formik.handleChange} className= "timer-input-change" type="text" name="hours" value= {(formik.values.hours >= 10)? formik.values.hours : "0"+ formik.values.hours} id="hours"/>:
-                <input onSubmit={formik.handleSubmit} onChange={formik.handleChange} className= "timer-input-change" type="text" name="minutes" value= {(formik.values.minutes >= 10)? formik.values.minutes : "0"+ formik.values.minutes} id="minutes"/>:
-                <input onSubmit={formik.handleSubmit} onChange={formik.handleChange} className= "timer-input-change" type="text" name="seconds" value= {(formik.values.seconds >= 10)? formik.values.seconds : "0"+ formik.values.seconds} id="seconds"/>
+                <input onSubmit={formik.handleSubmit} onChange={formik.handleChange} className= "timer-input-change" type="text" name="hours" value= {(formik.values.hours >= 10)? formik.values.hours : "0"+ formik.values.hours} id="hours" required minlength="0" maxlength="2" max="59"/>:
+                <input onSubmit={formik.handleSubmit} onChange={formik.handleChange} className= "timer-input-change" type="text" name="minutes" value= {(formik.values.minutes >= 10)? formik.values.minutes : "0"+ formik.values.minutes} id="minutes" required minlength="0" maxlength="2" max="59"/>:
+                <input onSubmit={formik.handleSubmit} onChange={formik.handleChange} className= "timer-input-change" type="text" name="seconds" value= {(formik.values.seconds >= 10)? formik.values.seconds : "0"+ formik.values.seconds} id="seconds" required minlength="0" maxlength="2" max="59" />
             </p>
           </div>
-          {/*<DisplayComponent time={time}/>*/}
          <div className="clock-holder">
               <div className="timer">
                    <BtnComponent status={status} resume={resume} reset={reset} stop={stop} start={start}/>
@@ -140,10 +142,8 @@ function BtnComponent(props) {
           <Link to="/Clock">
                   <button className="timer-btn timer-btn-yel">Cancel</button>
           </Link>
-
         </div> : ""
       }
-     
     </div>
   );
 }
